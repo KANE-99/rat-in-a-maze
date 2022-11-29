@@ -1,15 +1,10 @@
 import { atom, Atom, useSetAtom, useAtom, PrimitiveAtom } from "jotai";
 import { useEffect } from "react";
 import { Cell } from "../components/types";
+import { twoDimensionLooper } from "../utils";
 
 const cellsAtom = atom(
-  Array(4)
-    .fill({})
-    .map(() =>
-      Array(4)
-        .fill({})
-        .map((ele: Cell) => atom(ele))
-    )
+  twoDimensionLooper(4, () => atom<Cell | {}>({}))
 );
 
 export const updateCell = atom(null, (get, set, newCellData: Cell) => {
@@ -21,38 +16,38 @@ export const useCells = () => {
   const [allCells] = useAtom(cellsAtom);
   const setCell = useSetAtom(updateCell);
   useEffect(() => {
-    [0, 1, 2, 3].map((row) => {
-      [0, 1, 2, 3].map((col) => {
-        if (row === 0 && col === 0) {
-          // set first Cell
-          setCell({
-            row,
-            col,
-            isFirstCell: true,
-            isBlocked: false,
-            hasReward: false,
-          });
-        } else if (row === 3 && col === 3) {
-          // set last Cell
-          setCell({
-            row,
-            col,
-            isFirstCell: false,
-            isBlocked: false,
-            hasReward: true,
-          });
-        } else {
-          // set random values for all other rows & cols
-          setCell({
-            row,
-            col,
-            isFirstCell: false,
-            hasReward: false,
-            isBlocked: Math.random() < 0.2,
-          });
+    twoDimensionLooper(4, (row, col) => {
+      let customOptions: Cell = {
+        row,
+        col,
+      }
+      if (row === 0 && col === 0) {
+        // set first Cell
+        customOptions = {
+          ...customOptions,
+          isFirstCell: true,
+          isBlocked: false,
+          hasReward: false,
         }
-      });
-    });
+      } else if (row === 3 && col === 3) {
+        // set last Cell
+        customOptions = {
+          ...customOptions,
+          isFirstCell: false,
+          isBlocked: false,
+          hasReward: true,
+        };
+      } else {
+        // set random values for all other rows & cols
+        customOptions = {
+          ...customOptions,
+          isFirstCell: false,
+          hasReward: false,
+          isBlocked: Math.random() < 0.2,
+        };
+      }
+      setCell(customOptions)
+    })
   }, [setCell]);
 
   return [allCells];
