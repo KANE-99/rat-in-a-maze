@@ -1,0 +1,17 @@
+.maze_main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10rem;
+}
+
+.Maze {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    flex-wrap: wrap;
+    height: 40rem;
+    aspect-ratio: 1 / 1;
+    background-color: #eeeeee;
+    border: 0.2rem solid #000000;
+}
